@@ -14,7 +14,7 @@ class CustomerDao:
                     customers_name = customer[0]
                     customer_id = customer[1]
 
-                    customer_obj = Customer(customers_name,customer_id)
+                    customer_obj = Customer(customers_name, customer_id)
                     list_of_customers.append(customer_obj)
 
                 return list_of_customers
@@ -25,15 +25,14 @@ class CustomerDao:
                 cur.execute("DELETE FROM customer WHERE customer_id = %s", (customer_id,))
                 rows_deleted = cur.rowcount
                 if rows_deleted != 1:
-                    conn.commit()
-                    return True
+                   return False
                 else:
                     conn.commit()
-                    return False
+                    return True
 
     def add_customer(self, customer_object):
 
-        customer_name = customer_object.customer
+        customer_name = customer_object.customer_name
         customer_id = customer_object.customer_id
 
         with psycopg.connect(host="127.0.0.1", port="5432", dbname="postgres", user="postgres", password="YeMother6") as conn:

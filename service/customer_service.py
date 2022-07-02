@@ -24,8 +24,12 @@ class CustomerService:
         return customer_obj.to_dict()
 
     def delete_customer_by_id(self, customer_id):
+
         if not self.customer_dao.get_customer_by_id(customer_id):
-            raise UserNotFoundError(f"User with id {customer_id} was not found")
+            raise UserNotFoundError(f"Customer with id {customer_id} was not found")
+
+        self.customer_dao.delete_customer_by_id(customer_id)
+
 
     def add_customer(self, customer_obj):
     ##    if len(customer_obj.customer_name) < 2:

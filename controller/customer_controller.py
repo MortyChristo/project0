@@ -35,7 +35,6 @@ def add_customer():
     user_json_dictionary = request.get_json()
     customer_obj = Customer(user_json_dictionary['customer_name'], user_json_dictionary['customer_id'])
     try:
-
         return customer_service.add_customer(customer_obj), 201
     except InvalidParameterError as e:
         return {
@@ -53,6 +52,7 @@ def edit_customer_by_customer_id(customer_id):
             "message": str(e)
         }, 404
 
+
 @cc.route('/customer/<customer_id>', methods=['DELETE'])
 def delete_customer_by_id(customer_id):
     try:
@@ -60,7 +60,7 @@ def delete_customer_by_id(customer_id):
 
         return {
             "message": f"Customer with id {customer_id} was deleted successfully"
-        }
+        }, 201
     except UserNotFoundError as e:
         return {
                 "message": str(e)
