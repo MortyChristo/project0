@@ -19,16 +19,17 @@ class CustomerDao:
 
                 return list_of_customers
 
-    def delete_customer_by_id(self, customer_id):
+    def delete_customer_by_id(self, customer_id):  ##delete
         with psycopg.connect(host="127.0.0.1", port="5432", dbname="postgres", user="postgres", password="YeMother6") as conn:
             with conn.cursor() as cur:
-                cur.execute("DELETE FROM customer WHERE id = %s", (customer_id,))
+                cur.execute("DELETE FROM customer WHERE customer_id = %s", (customer_id,))
                 rows_deleted = cur.rowcount
                 if rows_deleted != 1:
-                    return False
-                else:
                     conn.commit()
                     return True
+                else:
+                    conn.commit()
+                    return False
 
     def add_customer(self, customer_object):
 
@@ -45,7 +46,7 @@ class CustomerDao:
     def get_customer_by_id(self, customer_id):
         with psycopg.connect(host="127.0.0.1", port="5432", dbname="postgres", user="postgres", password="YeMother6") as conn:
             with conn.cursor() as cur:
-                cur.execute("SELECT * FROM customer WHERE id = %s", (customer_id,))
+                cur.execute("SELECT * FROM customer WHERE customer_id = %s", (customer_id,))
 
                 user_row = cur.fetchone()
                 if not user_row:
@@ -59,7 +60,7 @@ class CustomerDao:
     def update_user_by_id(self, customer_object):
         with psycopg.connect(host="127.0.0.1", port="5432", dbname="postgres", user="postgres", password="YeMother6") as conn:
             with conn.cursor() as cur:
-                cur.execute("UPDATE users SET customer_name = %s, customer_id = %s RETURNING *", (customer_object.customer_name, customer_object.customer_id))
+                cur.execute("UPDATE customer SET customer_name = %s WHERE customer_id = %s RETURNING *", (customer_object.customer_name, customer_object.customer_id))
                 conn.commit()
                 updated_user_row = cur.fetchone()
                 if updated_user_row is None:

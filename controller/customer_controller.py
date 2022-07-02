@@ -23,7 +23,7 @@ def get_all_customers():
 @cc.route('/customer/<customer_id>')
 def get_customer_by_customer_id(customer_id):
     try:
-        return customer_service.get_user_by_customer_id(customer_id)
+        return customer_service.get_customer_by_id(customer_id)
     except UserNotFoundError as e:
         return {
             "message": str(e)
@@ -33,7 +33,7 @@ def get_customer_by_customer_id(customer_id):
 @cc.route('/customer', methods=['POST'])
 def add_customer():
     user_json_dictionary = request.get_json()
-    customer_obj = Customer(user_json_dictionary['customer'], user_json_dictionary['account_number'])
+    customer_obj = Customer(user_json_dictionary['customer_name'], user_json_dictionary['customer_id'])
     try:
 
         return customer_service.add_customer(customer_obj), 201
@@ -45,6 +45,23 @@ def add_customer():
 
 @cc.route('/customer/<customer_id>', methods=['PUT'])
 def edit_customer_by_customer_id(customer_id):
-    user_json_dictionary = request.get_json()
-    customer_obj = Customer(user_json_dictionary['username'], user_json_dictionary['account_number'])
-    return customer_service.edit_customer_by_customer_id(customer_id, customer_obj)
+    try:
+        json_dictionary = request.get_json()
+        return customer_service.edit_customer_by_id(Customer(json_dictionary['customer_name'], customer_id))
+    except UserNotFoundError as e:
+        return {
+            "message": str(e)
+        }, 404
+
+@cc.route('/customer/<customer_id>', methods=['DELETE'])
+def delete_customer_by_id(customer_id):
+    try:
+        customer_service.delete_customer_by_id(customer_id)
+
+        return {
+            "message": f"Customer with id {customer_id} was deleted successfully"
+        }
+    except UserNotFoundError as e:
+        return {
+                "message": str(e)
+                }, 404

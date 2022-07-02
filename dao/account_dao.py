@@ -8,6 +8,21 @@ class BankAccountDAO:
                 cur.execute("SELECT * FROM todos WHERE customer_id = %s", (customer_id))
                 account_list = []
                 for row in cur:
-                    account_list.append(BankAccount(row[0], row[1], row[3], row[4]))
+                    account_list.append(BankAccount(row[0], row[1], row[2], row[3]))
 
                     return account_list
+
+    def add_new_account(self, account_obj):
+        with psycopg.connect(host="127.0.0.1", port="5432", dbname="postgres", user="postgres",
+                             password="YeMother6") as conn:
+            with conn.cursor() as cur:
+                return pass
+
+    def get_account_by_id(self, account_id):
+        return pass
+
+    def update_account_by_id(self, account_obj):
+        return pass
+
+    def delete_account_by_id(self, account_id):
+        return pass
