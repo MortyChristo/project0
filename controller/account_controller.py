@@ -24,8 +24,7 @@ def get_all_accounts_by_customer_id(customer_id):
 @ac.route('/customer/<customer_id>/accounts', methods=['POST'])
 def add_new_account(customer_id):
     account_json_dict = request.get_json()
-    account_obj = BankAccount(customer_id, True, account_json_dict['account_type'], account_json_dict['account_number'],
-                              account_json_dict['balance'])
+    account_obj = BankAccount(customer_id, account_json_dict['account_num'], account_json_dict['balance'])
     try:
         return account_service.add_new_account(account_obj), 201
 
@@ -43,3 +42,28 @@ def get_account_by_customer_id(customer_id, account_id):
         return {
             "message": str(e)
         }, 405
+
+@ac.route('/customer/<customer_id>/accounts/<account_num>', methods= ['PUT'])
+def change_account_by_id(customer_id, account_num):
+    try:
+        account_json_dict = request.get_json()
+
+        return account_service.change_account_by_id(BankAccount(customer_id, account_num, account_json_dict['balance']))
+
+    except AccountNotFound as e:
+        return {
+            "message": str(e)
+        }, 404
+
+@ac.route('/customer/<customer_id>/accounts/<account_num>', methods= ['DELETE'])
+def delete_account_by_number(customer_id, account_num):
+    try:
+        account_service.delete_account_by_num(customer_id, account_num)
+
+        return {
+            "message": f"Account {account_num} under customer id {customer_id} was deleted"
+        }, 201
+    except AccountNotFound as e:
+        return {
+            "message": str(e)
+        }, 404

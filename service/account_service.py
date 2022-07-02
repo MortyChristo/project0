@@ -22,8 +22,18 @@ class AccountService:
     def get_account_by_id(self, customer_id, account_id):
         account_obj = self.account_dao.get_account_by_id(customer_id, account_id)
         if not account_obj:
-            raise AccountNotFound(f"The account {account_id} under customer {customer_id} could not be found")
+            raise AccountNotFound(f"Account {account_id} under customer {customer_id} could not be found")
 
-        return account_obj.to_dict()
+        return account_obj.to_dict_account()
 
+    def change_account_by_id(self, account_obj):
+        new_account_obj = self.account_dao.change_account_by_id(account_obj)
+        if new_account_obj is None:
+            raise AccountNotFound(f"Account {account_obj.account_num} cannot be located")
+        return new_account_obj.to_dict()
+
+    def delete_account_by_num(self, customer_id, account_num):
+        if not self.account_dao.get_account_by_id(customer_id, account_num):
+            raise AccountNotFound(f"Account number {account_num} under customer id {customer_id} was not found")
+        self.account_dao.delete_account_by_id(customer_id, account_num)
 
