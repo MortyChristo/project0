@@ -14,3 +14,4 @@ CREATE TABLE account (
 	CONSTRAINT fk_users FOREIGN KEY (customer_id) REFERENCES customer(customer_id)
 	);
 
+SELECT * FROM account WHERE customer_id = 5 AND balance > 1000 AND balance < 0

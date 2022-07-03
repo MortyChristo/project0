@@ -2,6 +2,7 @@ from dao.customer_dao import CustomerDao
 from dao.account_dao import BankAccountDAO
 from exception.customer_not_found import UserNotFoundError
 from exception.invalid_account import AccountNotFound
+from exception.invalid_amount import InvalidAmount
 
 class AccountService:
 
@@ -14,6 +15,13 @@ class AccountService:
             raise UserNotFoundError(f"Customer id {customer_id} not correct")
 
         return list(map(lambda a: a.to_dict(), self.account_dao.get_all_accounts_by_customer_id(customer_id)))
+
+    def get_account_by_balance(self, customer_id, less_than, greater_than):
+        if self.customer_dao.get_customer_by_id(customer_id) is None:
+            raise UserNotFoundError(f"Customer id {customer_id} not correct")
+       ## if less_than < greater_than:
+        ##    raise InvalidAmount(f"{less_than} should be greater than {greater_than}")
+        return list(map(lambda a: a.to_dict(), self.account_dao.get_customer_account_by_amount(customer_id, less_than, greater_than)))
 
     def add_new_account(self, account_obj):
         new_account_obj = self.account_dao.add_new_account(account_obj)

@@ -11,3 +11,6 @@ class BankAccount:
                 "account_num": self.account_num,
                 "balance": self.balance
             }
+
+        def get_balance(self):
+            return self.balance

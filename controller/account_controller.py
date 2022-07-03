@@ -3,6 +3,7 @@ from exception.customer_not_found import UserNotFoundError
 from exception.invalid_account import AccountNotFound
 from service.account_service import AccountService
 from model.bank_accounts import BankAccount
+from exception.invalid_amount import InvalidAmount
 
 ac = Blueprint('account_controller', __name__)
 
@@ -11,14 +12,32 @@ account_service = AccountService()
 
 @ac.route('/customer/<customer_id>/accounts', methods=['GET'])
 def get_all_accounts_by_customer_id(customer_id):
+    less_than_amount = None
+    greater_than_amount = None
+    amount_args = request.args
+
+    if amount_args.get('amountLessThan'):
+        less_than_amount = amount_args.get('amountLessThan')
+    if amount_args.get('amountGreaterThan'):
+        greater_than_amount = amount_args.get('amountGreaterThan')
+    if less_than_amount is not None or greater_than_amount is not None:
+        if int(less_than_amount) > int(greater_than_amount):
+            return {
+                "account": account_service.get_account_by_balance(customer_id, less_than_amount, greater_than_amount)
+            }, 201
+        else:
+            return{
+                "message": "something went wrong"
+                }
     try:
         return {
-                   "accounts": account_service.get_all_accounts_by_customer_id(customer_id)
-               }, 201
+            "accounts": account_service.get_all_accounts_by_customer_id(customer_id)
+        }, 201
+
     except UserNotFoundError as e:
         return {
-                   "message": str(e)
-               }, 404
+                "message": str(e)
+        }, 404
 
 
 @ac.route('/customer/<customer_id>/accounts', methods=['POST'])

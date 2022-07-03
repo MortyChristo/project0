@@ -1,5 +1,6 @@
 import psycopg
 from model.bank_accounts import BankAccount
+from exception.invalid_amount import InvalidAmount
 
 class BankAccountDAO:
     def get_all_accounts_by_customer_id(self, customer_id):
@@ -11,6 +12,16 @@ class BankAccountDAO:
                     account_list.append(BankAccount(row[0], row[1], row[2]))
 
                 return account_list
+    def get_customer_account_by_amount(self, customer_id, less_than, greater_than):
+        with psycopg.connect(host="127.0.0.1", port="5432", dbname="postgres", user="postgres", password="YeMother6") as conn:
+            with conn.cursor() as cur:
+                account_list = []
+                cur.execute("SELECT * FROM account WHERE customer_id = %s AND %s < balance AND balance < %s", (customer_id, greater_than, less_than))
+                for row in cur:
+                    account_list.append(BankAccount(row[0], row[1], row[2]))
+
+            return account_list
+
 
     def add_new_account(self, account_obj):
 
