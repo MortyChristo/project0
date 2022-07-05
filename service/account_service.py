@@ -3,12 +3,15 @@ from dao.account_dao import BankAccountDAO
 from exception.customer_not_found import UserNotFoundError
 from exception.invalid_account import AccountNotFound
 from exception.invalid_amount import InvalidAmount
+from exception.positive_balance import NegativeBalanceError
 
 class AccountService:
 
     def __init__(self):
         self.account_dao = BankAccountDAO()
         self.customer_dao = CustomerDao()
+
+
 
     def get_all_accounts_by_customer_id(self, customer_id):
         if self.customer_dao.get_customer_by_id(customer_id) is None:
@@ -17,14 +20,18 @@ class AccountService:
         return list(map(lambda a: a.to_dict(), self.account_dao.get_all_accounts_by_customer_id(customer_id)))
 
     def get_account_by_balance(self, customer_id, less_than, greater_than):
-        if self.customer_dao.get_customer_by_id(customer_id) is None:
-            raise UserNotFoundError(f"Customer id {customer_id} not correct")
-       ## if less_than < greater_than:
-        ##    raise InvalidAmount(f"{less_than} should be greater than {greater_than}")
+        if not self.customer_dao.get_customer_by_id(customer_id):
+            raise UserNotFoundError(f"There is no customer with customer id {customer_id}")
+
+        if not (int(less_than) >= int(greater_than)):
+            raise InvalidAmount(f"{less_than} should be greater than {greater_than}")
+
         return list(map(lambda a: a.to_dict(), self.account_dao.get_customer_account_by_amount(customer_id, less_than, greater_than)))
 
     def add_new_account(self, account_obj):
         new_account_obj = self.account_dao.add_new_account(account_obj)
+        if not new_account_obj.balance > 0:
+            raise NegativeBalanceError(f"Your balance must be positive")
         return new_account_obj.to_dict()
 
     def get_account_by_id(self, customer_id, account_id):
@@ -32,7 +39,7 @@ class AccountService:
         if not account_obj:
             raise AccountNotFound(f"Account {account_id} under customer {customer_id} could not be found")
 
-        return account_obj.to_dict_account()
+        return account_obj.to_dict()
 
     def change_account_by_id(self, account_obj):
         new_account_obj = self.account_dao.change_account_by_id(account_obj)

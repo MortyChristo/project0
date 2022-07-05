@@ -3,6 +3,8 @@ from model.bank_accounts import BankAccount
 from exception.invalid_amount import InvalidAmount
 
 class BankAccountDAO:
+
+
     def get_all_accounts_by_customer_id(self, customer_id):
         with psycopg.connect(host="127.0.0.1", port="5432", dbname="postgres", user="postgres", password="YeMother6") as conn:
             with conn.cursor() as cur:
@@ -16,9 +18,18 @@ class BankAccountDAO:
         with psycopg.connect(host="127.0.0.1", port="5432", dbname="postgres", user="postgres", password="YeMother6") as conn:
             with conn.cursor() as cur:
                 account_list = []
-                cur.execute("SELECT * FROM account WHERE customer_id = %s AND %s < balance AND balance < %s", (customer_id, greater_than, less_than))
-                for row in cur:
-                    account_list.append(BankAccount(row[0], row[1], row[2]))
+                if int(less_than) > 1 and int(less_than) > int(greater_than) and int(greater_than) >= 0:
+                    cur.execute("SELECT * FROM account WHERE customer_id = %s AND %s < balance AND balance < %s", (customer_id, greater_than, less_than))
+                    for row in cur:
+                        account_list.append(BankAccount(row[0], row[1], row[2]))
+                elif int(less_than) > 0 and int(greater_than) < 0:
+                    cur.execute("SELECT * FROM account WHERE customer_id = %s AND balance < %s", (customer_id, less_than))
+                    for row in cur:
+                        account_list.append(BankAccount(row[0], row[1], row[2]))
+                elif int(less_than) < 0 and int(greater_than) > 0:
+                    cur.execute("SELECT * FROM account WHERE customer_id = %s AND %s < balance", (customer_id, greater_than))
+                    for row in cur:
+                        account_list.append(BankAccount(row[0], row[1], row[2]))
 
             return account_list
 
@@ -35,7 +46,6 @@ class BankAccountDAO:
                             " VALUES (%s, %s, %s) RETURNING *", (customer_id, account_num, balance))
                 account_row = cur.fetchone()
                 conn.commit()
-
                 return BankAccount(customer_id, account_num, balance)
 
     def get_account_by_id(self, customer_id, account_num):

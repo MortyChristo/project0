@@ -9,6 +9,7 @@ customer_service = CustomerService()
 
 @cc.route('/')
 def init_table():
+
     return {
         "message": "Welcome"
     }, 200

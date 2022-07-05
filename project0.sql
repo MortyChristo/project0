@@ -15,3 +15,13 @@ CREATE TABLE account (
 	);
 
 SELECT * FROM account WHERE customer_id = 5 AND balance > 1000 AND balance < 0
+
+SELECT * FROM account 
+
+INSERT INTO customer (customer_name, customer_id)
+VALUES 
+('Chris', 850)
+
+INSERT INTO account (customer_id, account_num, balance)
+VALUES 
+(850, 123, 1000)
