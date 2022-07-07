@@ -19,7 +19,7 @@ class CustomerService:
     def get_customer_by_id(self, customer_id):
         customer_obj = self.customer_dao.get_customer_by_id(customer_id)
         if not customer_obj:
-            raise UserNotFoundError(f"User with id {customer_id} was not found")
+            raise UserNotFoundError(f"Customer with id {customer_id} was not found")
 
         return customer_obj.to_dict()
 
@@ -41,6 +41,6 @@ class CustomerService:
     def edit_customer_by_id(self, customer_obj):
         updated_customer_obj = self.customer_dao.update_user_by_id(customer_obj)
         if updated_customer_obj is None:
-            raise UserNotFoundError(f"User with id {customer_obj.id} was not found")
+            raise UserNotFoundError(f"Customer with id {customer_obj.customer_id} was not found")
 
         return updated_customer_obj.to_dict()

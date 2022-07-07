@@ -20,11 +20,13 @@ class AccountService:
         return list(map(lambda a: a.to_dict(), self.account_dao.get_all_accounts_by_customer_id(customer_id)))
 
     def get_account_by_balance(self, customer_id, less_than, greater_than):
-        if not self.customer_dao.get_customer_by_id(customer_id):
+        num = int(less_than)
+        if self.customer_dao.get_customer_by_id(customer_id) is None:
             raise UserNotFoundError(f"There is no customer with customer id {customer_id}")
 
         if not (int(less_than) >= int(greater_than)):
-            raise InvalidAmount(f"{less_than} should be greater than {greater_than}")
+            if num != -1:
+                raise InvalidAmount(f"{less_than} should be greater than {greater_than}")
 
         return list(map(lambda a: a.to_dict(), self.account_dao.get_customer_account_by_amount(customer_id, less_than, greater_than)))
 
@@ -38,7 +40,7 @@ class AccountService:
         account_obj = self.account_dao.get_account_by_id(customer_id, account_id)
         if not account_obj:
             raise AccountNotFound(f"Account {account_id} under customer {customer_id} could not be found")
-
+        ##create error for if userid  not found
         return account_obj.to_dict()
 
     def change_account_by_id(self, account_obj):
